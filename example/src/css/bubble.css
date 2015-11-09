@@ -1,0 +1,16 @@
+.land {
+  fill: #ddd;
+}
+
+.border {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.bubble {
+  fill-opacity: .5;
+  stroke: #fff;
+  stroke-width: .5px;
+}
