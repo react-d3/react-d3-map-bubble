@@ -12,6 +12,8 @@ import {
   Mesh,
   Svg,
   Circle,
+  Voronoi,
+  Tooltip,
   scale as domainScaleFunc,
   projection as projectionFunc,
   geoPath as geoPathFunc
@@ -20,6 +22,42 @@ import {
 export default class MapBubble extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      xTooltip: null,
+      yTooltip: null,
+      contentTooltip: null
+    }
+  }
+
+  _onMouseOver (d, i) {
+    this.setState({
+      xTooltip: d3.event.clientX,
+      yTooltip: d3.event.clientY,
+      contentTooltip: d.properties
+    })
+  }
+
+  _onMouseOut (d, i) {
+    this.setState({
+      xTooltip: null,
+      yTooltip: null,
+      contentTooltip: null
+    })
+  }
+
+  _dataPosition (d, geoPath, proj) {
+    var type =  d.geometry.type;
+
+    if(type === 'Polygon' || type === 'MultiPolygon') {
+      var x = geoPath.centroid(d)[0];
+      var y = geoPath.centroid(d)[1];
+    }else if (type === 'Point'){
+      var x = proj? +proj(d.geometry.coordinates)[0]: d.geometry.coordinates[0];
+      var y = proj? +proj(d.geometry.coordinates)[1]: d.geometry.coordinates[1];
+    }
+
+    return [x, y]
   }
 
   render() {
@@ -42,7 +80,9 @@ export default class MapBubble extends Component {
       domain,
       dataCircle,
       circleValue,
-      circleClass
+      circleClass,
+      showTooltip,
+      tooltipContent,
     } = this.props;
 
     var proj = projectionFunc({
@@ -60,7 +100,7 @@ export default class MapBubble extends Component {
 
     var domainScale = domainScaleFunc(domain);
 
-    var graticule, mesh, polygon, circle;
+    var graticule, mesh, polygon, circle, voronoi, tooltip;
 
     if(showGraticule){
       graticule = (
@@ -113,42 +153,81 @@ export default class MapBubble extends Component {
       })
     }
 
-    var r = (d) => {return domainScale(circleValue(d)); }
     if(dataCircle && !Array.isArray(dataCircle)) {
+      var r = domainScale(circleValue(dataCircle));
+      var position = this._dataPosition(dataCircle, geoPath, proj);
+
       circle = (
         <Circle
           data = {dataCircle}
           geoPath= {geoPath}
           circleClass= {circleClass}
           r= {r}
+          x= {position[0]}
+          y= {position[1]}
         />
       )
     } else {
       circle = dataCircle.map((d, i) => {
+        var r = domainScale(circleValue(d));
+        var position = this._dataPosition(d, geoPath, proj);
+
         return (
           <Circle
             key = {i}
             data = {d}
             geoPath= {geoPath}
             circleClass= {circleClass}
-            domainScale= {domainScale}
-            circleValue= {circleValue}
             r= {r}
+            x= {position[0]}
+            y= {position[1]}
           />
         )
       })
     }
 
+    if(showTooltip) {
+      var onMouseOut = this._onMouseOut.bind(this);
+      var onMouseOver = this._onMouseOver.bind(this);
+
+      var tooltip = (
+        <Tooltip
+          {...this.state}
+          content= {tooltipContent}
+        />
+      )
+
+      var voronoiX = (d) => {return geoPath.centroid(d)[0];}
+      var voronoiY = (d) => {return geoPath.centroid(d)[1];}
+
+      var voronoi= (
+        <Voronoi
+          data= {dataCircle}
+          geoPath= {geoPath}
+          x= {voronoiX}
+          y= {voronoiY}
+          width= {width}
+          height= {height}
+          onMouseOut= {onMouseOut}
+          onMouseOver= {onMouseOver}
+        />
+      )
+    }
+
     return (
-      <Svg
-        width={width}
-        height={height}
-      >
-        {graticule}
-        {polygon}
-        {mesh}
-        {circle}
-      </Svg>
+      <div>
+        {tooltip}
+        <Svg
+          width={width}
+          height={height}
+        >
+          {graticule}
+          {polygon}
+          {mesh}
+          {circle}
+          {voronoi}
+        </Svg>
+      </div>
     )
   }
 }

@@ -31,7 +31,7 @@ var css= require('./css/bubble.css');
     range: [0, 15]
   };
 
-  var cicles = topojson.feature(us, us.objects.counties).features
+  var circles = topojson.feature(us, us.objects.counties).features
       .sort(function(a, b) { return b.properties.population - a.properties.population; })
   var circleValue = function(d) { return +d.properties.population; };
   var projection = 'null';
@@ -45,10 +45,11 @@ var css= require('./css/bubble.css');
       dataMesh= {dataStates}
       meshClass = {meshClass}
       domain= {domain}
-      dataCircle= {cicles}
+      dataCircle= {circles}
       circleValue= {circleValue}
       projection= {projection}
       showGraticule= {false}
+      showTooltip= {true}
     />
   , document.getElementById('blank-mapbubble')
   )
