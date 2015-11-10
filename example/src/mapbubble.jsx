@@ -47,6 +47,7 @@ var css= require('./css/bubble.css');
       domain= {domain}
       dataCircle= {circles}
       circleValue= {circleValue}
+      circleClass= {'bubble'}
       projection= {projection}
       showGraticule= {false}
       showTooltip= {true}

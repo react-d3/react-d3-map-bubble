@@ -30,7 +30,7 @@ export default class MapBubble extends Component {
     }
   }
 
-  _onMouseOver (d, i) {
+  _onMouseOver (dom, d, i) {
     this.setState({
       xTooltip: d3.event.clientX,
       yTooltip: d3.event.clientY,
@@ -38,7 +38,7 @@ export default class MapBubble extends Component {
     })
   }
 
-  _onMouseOut (d, i) {
+  _onMouseOut (dom, d, i) {
     this.setState({
       xTooltip: null,
       yTooltip: null,
@@ -102,10 +102,14 @@ export default class MapBubble extends Component {
 
     var graticule, mesh, polygon, circle, voronoi, tooltip;
 
+    var onMouseOut = this._onMouseOut.bind(this);
+    var onMouseOver = this._onMouseOver.bind(this);
+
     if(showGraticule){
       graticule = (
         <Graticule
           geoPath= {geoPath}
+          {...this.state}
         />
       )
     }
@@ -116,6 +120,7 @@ export default class MapBubble extends Component {
           data = {dataPolygon}
           geoPath= {geoPath}
           polygonClass= {polygonClass}
+          {...this.state}
         />
       )
     }else {
@@ -126,6 +131,7 @@ export default class MapBubble extends Component {
             data = {d}
             geoPath= {geoPath}
             polygonClass= {polygonClass}
+            {...this.state}
           />
         )
       })
@@ -138,6 +144,7 @@ export default class MapBubble extends Component {
           data = {dataMesh}
           geoPath= {geoPath}
           meshClass= {meshClass}
+          {...this.state}
         />
       )
     } else {
@@ -148,6 +155,7 @@ export default class MapBubble extends Component {
             data = {d}
             geoPath= {geoPath}
             meshClass= {meshClass}
+            {...this.state}
           />
         )
       })
@@ -165,6 +173,9 @@ export default class MapBubble extends Component {
           r= {r}
           x= {position[0]}
           y= {position[1]}
+          onMouseOut= {onMouseOut}
+          onMouseOver= {onMouseOver}
+          {...this.state}
         />
       )
     } else {
@@ -181,14 +192,15 @@ export default class MapBubble extends Component {
             r= {r}
             x= {position[0]}
             y= {position[1]}
+            onMouseOut= {onMouseOut}
+            onMouseOver= {onMouseOver}
+            {...this.state}
           />
         )
       })
     }
 
     if(showTooltip) {
-      var onMouseOut = this._onMouseOut.bind(this);
-      var onMouseOver = this._onMouseOver.bind(this);
 
       var tooltip = (
         <Tooltip
@@ -197,8 +209,23 @@ export default class MapBubble extends Component {
         />
       )
 
-      var voronoiX = (d) => {return geoPath.centroid(d)[0];}
-      var voronoiY = (d) => {return geoPath.centroid(d)[1];}
+      var voronoiX = (d) => {
+        var type =  d.geometry.type;
+        if(type === 'Polygon' || type === 'MultiPolygon') {
+          return geoPath.centroid(d)[0];
+        }else if (type === 'Point') {
+          return proj? +proj(d.geometry.coordinates)[0]: d.geometry.coordinates[0]
+        }
+      }
+
+      var voronoiY = (d) => {
+        var type =  d.geometry.type;
+        if(type === 'Polygon' || type === 'MultiPolygon') {
+          return geoPath.centroid(d)[1];
+        }else if (type === 'Point') {
+          return proj? +proj(d.geometry.coordinates)[1]: d.geometry.coordinates[1]
+        }
+      }
 
       var voronoi= (
         <Voronoi
@@ -210,6 +237,7 @@ export default class MapBubble extends Component {
           height= {height}
           onMouseOut= {onMouseOut}
           onMouseOver= {onMouseOver}
+          {...this.state}
         />
       )
     }
@@ -224,8 +252,8 @@ export default class MapBubble extends Component {
           {graticule}
           {polygon}
           {mesh}
-          {circle}
           {voronoi}
+          {circle}
         </Svg>
       </div>
     )

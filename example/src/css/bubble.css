@@ -10,7 +10,13 @@
 }
 
 .bubble {
+  fill: blue;
   fill-opacity: .5;
   stroke: #fff;
   stroke-width: .5px;
+  pointer-events: all;
+}
+
+circle:hover {
+  fill: red !important;
 }
