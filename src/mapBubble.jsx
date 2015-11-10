@@ -11,14 +11,11 @@ import {
   Graticule,
   Mesh,
   Svg,
+  Circle,
   scale as domainScaleFunc,
   projection as projectionFunc,
   geoPath as geoPathFunc
 } from 'react-d3-map-core';
-
-import {
-  default as Circle
-} from './circle';
 
 export default class MapBubble extends Component {
   constructor(props) {
@@ -48,17 +45,18 @@ export default class MapBubble extends Component {
       circleClass
     } = this.props;
 
-    // var proj = projectionFunc({
-    //   projection: projection,
-    //   scale: scale,
-    //   translate: translate,
-    //   precision: precision,
-    //   rotate: rotate,
-    //   center: center,
-    //   clipAngle: clipAngle,
-    //   parallels: parallels
-    // });
-    var geoPath = geoPathFunc(null);
+    var proj = projectionFunc({
+      projection: projection,
+      scale: scale,
+      translate: translate,
+      precision: precision,
+      rotate: rotate,
+      center: center,
+      clipAngle: clipAngle,
+      parallels: parallels
+    });
+
+    var geoPath = geoPathFunc(proj);
 
     var domainScale = domainScaleFunc(domain);
 
@@ -93,6 +91,7 @@ export default class MapBubble extends Component {
       })
     }
 
+
     if(dataMesh && !Array.isArray(dataMesh)) {
       mesh = (
         <Mesh
@@ -114,14 +113,14 @@ export default class MapBubble extends Component {
       })
     }
 
+    var r = (d) => {return domainScale(circleValue(d)); }
     if(dataCircle && !Array.isArray(dataCircle)) {
       circle = (
         <Circle
           data = {dataCircle}
           geoPath= {geoPath}
           circleClass= {circleClass}
-          domainScale= {domainScale}
-          circleValue= {circleValue}
+          r= {r}
         />
       )
     } else {
@@ -134,6 +133,7 @@ export default class MapBubble extends Component {
             circleClass= {circleClass}
             domainScale= {domainScale}
             circleValue= {circleValue}
+            r= {r}
           />
         )
       })
