@@ -1,6 +1,6 @@
 {
   "name": "react-d3-map-bubble",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "react-d3 map bubble component",
   "main": "./lib/index.js",
   "scripts": {
