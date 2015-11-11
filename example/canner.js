@@ -4,8 +4,8 @@ examples = [
     "title": "Map Bubble"
   },
   {
-    "link": "twDengue",
-    "title": "Taiwan Dengue Fever"
+    "link": "earthquake",
+    "title": "Earthquake"
   }
 ];
 

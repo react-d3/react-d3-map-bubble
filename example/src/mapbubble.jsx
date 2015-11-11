@@ -36,6 +36,8 @@ var css= require('./css/bubble.css');
   var circleValue = function(d) { return +d.properties.population; };
   var projection = 'null';
 
+  var tooltipContent = function(d) {return d.properties;}
+
   ReactDOM.render(
     <MapBubble
       width= {width}
@@ -49,8 +51,10 @@ var css= require('./css/bubble.css');
       circleValue= {circleValue}
       circleClass= {'bubble'}
       projection= {projection}
+      tooltipContent= {tooltipContent}
       showGraticule= {false}
       showTooltip= {true}
+      showLegend= {true}
     />
   , document.getElementById('blank-mapbubble')
   )

@@ -14,7 +14,8 @@ module.exports = [{
   name: 'react-d3-map-core-example-es5',
   devtool: ENV ? "source-map": '',
   entry: {
-    mapbubble: './example/src/mapbubble.jsx'
+    mapbubble: './example/src/mapbubble.jsx',
+    earthquake: './example/src/earthquake.jsx'
   },
 
   output: {

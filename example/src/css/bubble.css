@@ -10,13 +10,24 @@
 }
 
 .bubble {
-  fill: blue;
-  fill-opacity: .5;
+  fill: red;
+  fill-opacity: .3;
   stroke: #fff;
   stroke-width: .5px;
   pointer-events: all;
 }
 
 circle:hover {
-  fill: red !important;
+  fill-opacity: .8 !important;
+}
+
+.legend circle {
+  fill: none;
+  stroke: #ccc;
+}
+
+.legend text {
+  fill: #777;
+  font: 10px sans-serif;
+  text-anchor: middle;
 }

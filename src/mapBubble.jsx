@@ -19,6 +19,10 @@ import {
   geoPath as geoPathFunc
 } from 'react-d3-map-core';
 
+import {
+  default as Legend
+} from './bubbleLegend';
+
 export default class MapBubble extends Component {
   constructor(props) {
     super(props);
@@ -31,10 +35,14 @@ export default class MapBubble extends Component {
   }
 
   _onMouseOver (dom, d, i) {
+    const {
+      tooltipContent
+    } = this.props
+
     this.setState({
       xTooltip: d3.event.clientX,
       yTooltip: d3.event.clientY,
-      contentTooltip: d.properties
+      contentTooltip: tooltipContent(d)
     })
   }
 
@@ -47,7 +55,13 @@ export default class MapBubble extends Component {
   }
 
   _dataPosition (d, geoPath, proj) {
-    var type =  d.geometry.type;
+
+    const {
+      circleX,
+      circleY
+    } = this.props;
+
+    var type =  d.geometry? d.geometry.type: 'other';
 
     if(type === 'Polygon' || type === 'MultiPolygon') {
       var x = geoPath.centroid(d)[0];
@@ -55,6 +69,9 @@ export default class MapBubble extends Component {
     }else if (type === 'Point'){
       var x = proj? +proj(d.geometry.coordinates)[0]: d.geometry.coordinates[0];
       var y = proj? +proj(d.geometry.coordinates)[1]: d.geometry.coordinates[1];
+    }else if (type === 'other'){
+      var x = proj? +proj([circleX(d), circleY(d)])[0]: circleX(d);
+      var y = proj? +proj([circleX(d), circleY(d)])[1]: circleY(d);
     }
 
     return [x, y]
@@ -82,7 +99,10 @@ export default class MapBubble extends Component {
       circleValue,
       circleClass,
       showTooltip,
+      showLegend,
       tooltipContent,
+      circleX,
+      circleY
     } = this.props;
 
     var proj = projectionFunc({
@@ -100,7 +120,7 @@ export default class MapBubble extends Component {
 
     var domainScale = domainScaleFunc(domain);
 
-    var graticule, mesh, polygon, circle, voronoi, tooltip;
+    var graticule, mesh, polygon, circle, voronoi, tooltip, legend;
 
     var onMouseOut = this._onMouseOut.bind(this);
     var onMouseOver = this._onMouseOver.bind(this);
@@ -210,20 +230,24 @@ export default class MapBubble extends Component {
       )
 
       var voronoiX = (d) => {
-        var type =  d.geometry.type;
+        var type =  d.geometry? d.geometry.type: 'other';
         if(type === 'Polygon' || type === 'MultiPolygon') {
           return geoPath.centroid(d)[0];
         }else if (type === 'Point') {
           return proj? +proj(d.geometry.coordinates)[0]: d.geometry.coordinates[0]
+        }else if (type === 'other') {
+          return proj? +proj([circleX(d), circleY(d)])[0]: circleX(d);
         }
       }
 
       var voronoiY = (d) => {
-        var type =  d.geometry.type;
+        var type =  d.geometry? d.geometry.type: 'other';
         if(type === 'Polygon' || type === 'MultiPolygon') {
           return geoPath.centroid(d)[1];
         }else if (type === 'Point') {
           return proj? +proj(d.geometry.coordinates)[1]: d.geometry.coordinates[1]
+        }else if (type === 'other') {
+          return proj? +proj([circleX(d), circleY(d)])[1]: circleY(d);
         }
       }
 
@@ -238,6 +262,18 @@ export default class MapBubble extends Component {
           onMouseOut= {onMouseOut}
           onMouseOver= {onMouseOver}
           {...this.state}
+        />
+      )
+    }
+
+    if(showLegend) {
+      var legend = (
+        <Legend
+          width= {width}
+          height= {height}
+          domain= {domain}
+          domainScale= {domainScale}
+          circleValue= {circleValue}
         />
       )
     }
