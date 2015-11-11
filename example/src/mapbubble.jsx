@@ -8,7 +8,7 @@ var MapBubble = require('../../lib').MapBubble;
 var css= require('./css/bubble.css');
 
 // Example
-// http://bl.ocks.org/mbostock/4060606
+// http://bl.ocks.org/mbostock/9943478
 (function() {
   var width = 960,
   height = 600;
