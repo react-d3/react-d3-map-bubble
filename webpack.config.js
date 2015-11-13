@@ -15,7 +15,8 @@ module.exports = [{
   devtool: ENV ? "source-map": '',
   entry: {
     mapbubble: './example/src/mapbubble.jsx',
-    earthquake: './example/src/earthquake.jsx'
+    earthquake: './example/src/earthquake.jsx',
+    "earthquake-tile": './example/src/earthquake-tile.jsx'
   },
 
   output: {

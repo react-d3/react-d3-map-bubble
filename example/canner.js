@@ -6,6 +6,10 @@ examples = [
   {
     "link": "earthquake",
     "title": "Earthquake"
+  },
+  {
+    "link": "earthquake-tile",
+    "title": "Earthquake Tile"
   }
 ];
 

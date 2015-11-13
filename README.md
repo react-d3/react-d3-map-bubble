@@ -158,6 +158,9 @@ var css= require('./css/bubble.css');
 
 ![earthquake](./example/img/earthquake.png)
 
+### With tile
+
+![earthquake tile](./example/img/earthquake-tile.png)
 
 ## Install
 

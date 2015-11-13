@@ -54,10 +54,6 @@ var css= require('./css/bubble.css');
     <MapBubble
       width= {width}
       height= {height}
-      dataPolygon= {land}
-      polygonClass= {polygonClass}
-      dataMesh= {countries}
-      meshClass = {meshClass}
       domain= {domain}
       dataCircle= {circles}
       circleValue= {circleValue}
@@ -72,8 +68,9 @@ var css= require('./css/bubble.css');
       showGraticule= {true}
       showTooltip= {true}
       showLegend= {false}
+      showTile= {true}
     />
-  , document.getElementById('blank-earthquake')
+  , document.getElementById('blank-earthquake-tile')
   )
 
 })()

@@ -12,7 +12,9 @@ import {
   Mesh,
   Circle,
   Voronoi,
+  Tile,
   isTooltipUpdate,
+  tileFunc,
   scale as domainScaleFunc,
   projection as projectionFunc,
   geoPath as geoPathFunc
@@ -80,8 +82,11 @@ export default class Map extends Component {
       circleX,
       circleY,
       onMouseOut,
-      onMouseOver
+      onMouseOver,
+      showTile
     } = this.props;
+
+    var graticule, mesh, polygon, circle, voronoi, tile;
 
     var proj = projectionFunc({
       projection: projection,
@@ -94,11 +99,21 @@ export default class Map extends Component {
       parallels: parallels
     });
 
+    if(showTile) {
+      var tiles= tileFunc({
+        scale: scale * 2 * Math.PI,
+        translate: translate,
+        size: [width, height]
+      })
+
+      tile= (<Tile
+        tiles= {tiles}
+      />)
+    }
+
     var geoPath = geoPathFunc(proj);
 
     var domainScale = domainScaleFunc(domain);
-
-    var graticule, mesh, polygon, circle, voronoi;
 
     if(showGraticule){
       graticule = (
@@ -109,79 +124,64 @@ export default class Map extends Component {
       )
     }
 
-    if(dataPolygon && !Array.isArray(dataPolygon)) {
-      polygon = (
-        <Polygon
-          data = {dataPolygon}
-          geoPath= {geoPath}
-          polygonClass= {polygonClass}
-          {...this.state}
-        />
-      )
-    }else {
-      polygon = dataPolygon.map((d, i) => {
-        return (
+    if(dataPolygon) {
+      if(!Array.isArray(dataPolygon)) {
+        polygon = (
           <Polygon
-            key = {i}
-            data = {d}
+            data = {dataPolygon}
             geoPath= {geoPath}
             polygonClass= {polygonClass}
             {...this.state}
           />
         )
-      })
+      }else {
+        polygon = dataPolygon.map((d, i) => {
+          return (
+            <Polygon
+              key = {i}
+              data = {d}
+              geoPath= {geoPath}
+              polygonClass= {polygonClass}
+              {...this.state}
+            />
+          )
+        })
+      }
     }
 
-
-    if(dataMesh && !Array.isArray(dataMesh)) {
-      mesh = (
-        <Mesh
-          data = {dataMesh}
-          geoPath= {geoPath}
-          meshClass= {meshClass}
-          {...this.state}
-        />
-      )
-    } else {
-      mesh = dataMesh.map((d, i) => {
-        return (
+    if(dataMesh) {
+      if(!Array.isArray(dataMesh)) {
+        mesh = (
           <Mesh
-            key = {i}
-            data = {d}
+            data = {dataMesh}
             geoPath= {geoPath}
             meshClass= {meshClass}
             {...this.state}
           />
         )
-      })
+      } else {
+        mesh = dataMesh.map((d, i) => {
+          return (
+            <Mesh
+              key = {i}
+              data = {d}
+              geoPath= {geoPath}
+              meshClass= {meshClass}
+              {...this.state}
+            />
+          )
+        })
+      }
     }
 
-    if(dataCircle && !Array.isArray(dataCircle)) {
-      var r = domainScale(circleValue(dataCircle));
-      var position = this._dataPosition(dataCircle, geoPath, proj);
+    if(dataCircle) {
+      if(!Array.isArray(dataCircle)) {
+        var r = domainScale(circleValue(dataCircle));
+        var position = this._dataPosition(dataCircle, geoPath, proj);
 
-      circle = (
-        <Circle
-          data = {dataCircle}
-          geoPath= {geoPath}
-          circleClass= {circleClass}
-          r= {r}
-          x= {position[0]}
-          y= {position[1]}
-          onMouseOut= {onMouseOut}
-          onMouseOver= {onMouseOver}
-          {...this.state}
-        />
-      )
-    } else {
-      circle = dataCircle.map((d, i) => {
-        var r = domainScale(circleValue(d));
-        var position = this._dataPosition(d, geoPath, proj);
-
-        return (
+        circle = (
           <Circle
-            key = {i}
-            data = {d}
+            data = {dataCircle}
             geoPath= {geoPath}
             circleClass= {circleClass}
             r= {r}
@@ -192,7 +192,27 @@ export default class Map extends Component {
             {...this.state}
           />
         )
-      })
+      } else {
+        circle = dataCircle.map((d, i) => {
+          var r = domainScale(circleValue(d));
+          var position = this._dataPosition(d, geoPath, proj);
+
+          return (
+            <Circle
+              key = {i}
+              data = {d}
+              geoPath= {geoPath}
+              circleClass= {circleClass}
+              r= {r}
+              x= {position[0]}
+              y= {position[1]}
+              onMouseOut= {onMouseOut}
+              onMouseOver= {onMouseOver}
+              {...this.state}
+            />
+          )
+        })
+      }
     }
 
     if(showTooltip) {
@@ -236,6 +256,7 @@ export default class Map extends Component {
 
     return (
       <g>
+        {tile}
         {graticule}
         {polygon}
         {mesh}
