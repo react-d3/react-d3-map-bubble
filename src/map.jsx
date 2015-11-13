@@ -101,8 +101,8 @@ export default class Map extends Component {
 
     if(showTile) {
       var tiles= tileFunc({
-        scale: scale * 2 * Math.PI,
-        translate: translate,
+        scale: proj.scale() * 2 * Math.PI,
+        translate: proj([0, 0]),
         size: [width, height]
       })
 
