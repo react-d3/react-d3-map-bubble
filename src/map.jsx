@@ -108,6 +108,8 @@ export default class Map extends Component {
 
       tile= (<Tile
         tiles= {tiles}
+        scale= {tiles.scale}
+        translate= {tiles.translate}
       />)
     }
 
